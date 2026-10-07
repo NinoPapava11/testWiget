@@ -40,7 +40,7 @@ function loadSdk(url, isModule, onSlowLoad) {
         script.remove();
         console.error('ONAIM SDK load failed', { url, reason });
         reject(new Error(reason === 'timeout'
-          ? 'SDK-ის ჩატვირთვას 2 წუთზე მეტი დასჭირდა. გადაამოწმე ინტერნეტი და დააჭირე Sync-ს ხელახლა.'
+          ? `SDK-ის ჩატვირთვას ${Math.ceil(SDK_LOAD_TIMEOUT_MS / 60000)} წუთზე მეტი დასჭირდა. გადაამოწმე ინტერნეტი და დააჭირე Sync-ს ხელახლა.`
           : 'SDK-ის მოთხოვნა ჩავარდა. სცადე სხვა ქსელი; გადაამოწმე SDK-ის მისამართი და ბრაუზერის Network/Console.'));
       }
       if (isModule) script.type = 'module';
@@ -115,9 +115,20 @@ function readAttributes(url) {
 }
 
 function sdkFromLandingUrl(url) {
-  // ONAIM's documented embed script location, resolved on this landing's origin.
-  // This does not scrape or execute scripts from the standalone HTML page.
-  return { url: new URL('/widget/onaim-landing-page.js', url).href, isModule: false };
+  const landing = new URL(url);
+  const directUrl = new URL('/widget/onaim-landing-page.js', landing).href;
+  const hosted = ['http:', 'https:'].includes(window.location.protocol)
+    && !['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+  if (hosted && landing.origin === 'https://qa-landing-v2.onaim.io') {
+    // Keep /widget/ in the path: the SDK resolves ../env.js from its script URL.
+    // vercel.json forwards this whole prefix, including env.js, to the QA origin.
+    return {
+      url: new URL('/onaim/widget/onaim-landing-page.js', window.location.origin).href,
+      fallbackUrl: directUrl,
+      isModule: false
+    };
+  }
+  return { url: directUrl, isModule: false };
 }
 
 function showGeneratedCode(sdk, attributes) {
@@ -197,9 +208,17 @@ async function loadLanding() {
     get('loadButton').disabled = true;
     get('loadButton').textContent = 'Sync…';
     if (!componentRegistered) {
-      await loadSdk(sdk.url, sdk.isModule, () => {
+      const onSlowLoad = () => {
         if (current === revision) get('statusText').textContent = 'SDK ჯერ იტვირთება. ნელ ქსელზე ამას მეტი დრო სჭირდება…';
-      });
+      };
+      try {
+        await loadSdk(sdk.url, sdk.isModule, onSlowLoad);
+      } catch (error) {
+        if (current !== revision) return;
+        if (!sdk.fallbackUrl || customElements.get('onaim-landing-page')) throw error;
+        get('statusText').textContent = 'Vercel-იდან SDK ვერ ჩაიტვირთა. ვცდილობ პირდაპირ ONAIM-იდან…';
+        await loadSdk(sdk.fallbackUrl, sdk.isModule, onSlowLoad);
+      }
       activeSdkKey = sdkKey;
     }
       if (current !== revision) return;

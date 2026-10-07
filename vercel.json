@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/onaim/:path*",
+      "destination": "https://qa-landing-v2.onaim.io/:path*"
+    }
+  ]
+}
