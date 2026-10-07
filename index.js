@@ -239,3 +239,17 @@ get('clearButton').addEventListener('click', () => {
 // Render automatically using the URL configured at the top of this file.
 loadLanding();
 
+document.querySelectorAll('.bottom-nav-item').forEach((button) => {
+  button.addEventListener('click', () => {
+    document.querySelectorAll('.bottom-nav-item').forEach((item) => {
+      const selected = item === button;
+      item.classList.toggle('is-active', selected);
+      item.setAttribute('aria-pressed', String(selected));
+    });
+    // Host pages can connect their own routes or panels to this event.
+    document.dispatchEvent(new CustomEvent('landing-navigation', {
+      detail: { section: button.dataset.nav }
+    }));
+  });
+});
+
