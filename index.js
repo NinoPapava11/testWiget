@@ -2,7 +2,7 @@
 
 const get = (id) => document.getElementById(id);
 const sdkLoads = new Map();
-const SDK_LOAD_TIMEOUT_MS = 120000;
+const SDK_LOAD_TIMEOUT_MS = 420000;
 let activeSdkKey = null;
 let revision = 0;
 
