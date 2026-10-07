@@ -2,6 +2,7 @@
 
 const get = (id) => document.getElementById(id);
 const sdkLoads = new Map();
+const SDK_LOAD_TIMEOUT_MS = 120000;
 let activeSdkKey = null;
 let revision = 0;
 
@@ -21,22 +22,32 @@ function resetPreview() {
   get('widgetPlaceholder').style.display = 'flex';
 }
 
-function loadSdk(url, isModule) {
+function loadSdk(url, isModule, onSlowLoad) {
   const key = `${isModule}:${url}`;
   if (!sdkLoads.has(key)) {
     const promise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      const timer = setTimeout(fail, 20000);
-      function fail() {
+      const slowTimer = setTimeout(() => onSlowLoad?.(), 20000);
+      const timer = setTimeout(() => fail('timeout'), SDK_LOAD_TIMEOUT_MS);
+      function cleanup() {
         clearTimeout(timer);
+        clearTimeout(slowTimer);
+        script.onload = null;
+        script.onerror = null;
+      }
+      function fail(reason) {
+        cleanup();
         script.remove();
-        reject(new Error('SDK ვერ ჩაიტვირთა. გადაამოწმე JavaScript URL და ქსელი.'));
+        console.error('ONAIM SDK load failed', { url, reason });
+        reject(new Error(reason === 'timeout'
+          ? 'SDK-ის ჩატვირთვას 2 წუთზე მეტი დასჭირდა. გადაამოწმე ინტერნეტი და დააჭირე Sync-ს ხელახლა.'
+          : 'SDK-ის მოთხოვნა ჩავარდა. სცადე სხვა ქსელი; გადაამოწმე SDK-ის მისამართი და ბრაუზერის Network/Console.'));
       }
       if (isModule) script.type = 'module';
       script.defer = true;
       script.src = url;
-      script.onload = () => { clearTimeout(timer); resolve(); };
-      script.onerror = fail;
+      script.onload = () => { cleanup(); resolve(); };
+      script.onerror = () => fail('network-or-blocked');
       document.head.append(script);
     });
     sdkLoads.set(key, promise);
@@ -186,7 +197,9 @@ async function loadLanding() {
     get('loadButton').disabled = true;
     get('loadButton').textContent = 'Sync…';
     if (!componentRegistered) {
-      await loadSdk(sdk.url, sdk.isModule);
+      await loadSdk(sdk.url, sdk.isModule, () => {
+        if (current === revision) get('statusText').textContent = 'SDK ჯერ იტვირთება. ნელ ქსელზე ამას მეტი დრო სჭირდება…';
+      });
       activeSdkKey = sdkKey;
     }
       if (current !== revision) return;
