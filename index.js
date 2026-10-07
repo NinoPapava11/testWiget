@@ -1,0 +1,227 @@
+﻿const get = (id) => document.getElementById(id);
+const sdkLoads = new Map();
+let activeSdkKey = null;
+let revision = 0;
+
+function normalizeUrl(value) {
+  const input = value.trim();
+  if (!input) throw new Error('შეიყვანე URL.');
+  const url = new URL(/^[a-z][a-z\d+.-]*:/i.test(input) ? input : `https://${input}`);
+  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password) {
+    throw new Error('გამოიყენე HTTP ან HTTPS მისამართი, მომხმარებლის სახელისა და პაროლის გარეშე.');
+  }
+  return url.href;
+}
+
+function resetPreview() {
+  get('componentHost').replaceChildren();
+  get('componentHost').hidden = true;
+  get('widgetPlaceholder').style.display = 'flex';
+}
+
+function loadSdk(url, isModule) {
+  const key = `${isModule}:${url}`;
+  if (!sdkLoads.has(key)) {
+    const promise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      const timer = setTimeout(fail, 20000);
+      function fail() {
+        clearTimeout(timer);
+        script.remove();
+        reject(new Error('SDK ვერ ჩაიტვირთა. გადაამოწმე JavaScript URL და ქსელი.'));
+      }
+      if (isModule) script.type = 'module';
+      script.defer = true;
+      script.src = url;
+      script.onload = () => { clearTimeout(timer); resolve(); };
+      script.onerror = fail;
+      document.head.append(script);
+    });
+    sdkLoads.set(key, promise);
+    promise.catch(() => sdkLoads.delete(key));
+  }
+  return sdkLoads.get(key);
+}
+
+function waitForComponent() {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('SDK-მ onaim-landing-page ვერ დაარეგისტრირა. გადაამოწმე SDK და ES module პარამეტრი.')), 10000);
+    customElements.whenDefined('onaim-landing-page').then(() => { clearTimeout(timer); resolve(); });
+  });
+}
+
+function readSdk() {
+  const template = document.createElement('template');
+  template.innerHTML = get('sdkMarkup').value;
+  const scripts = template.content.querySelectorAll('script');
+  if (scripts.length !== 1 || !scripts[0].getAttribute('src')) {
+    throw new Error('ჩასვი ერთი script ტეგი JavaScript src მისამართით.');
+  }
+  const script = scripts[0];
+  const type = script.getAttribute('type');
+  if (type && !['module', 'text/javascript', 'application/javascript'].includes(type)) {
+    throw new Error('script-ის ტიპი უნდა იყოს JavaScript ან module.');
+  }
+  return { url: normalizeUrl(script.getAttribute('src')), isModule: type === 'module' };
+}
+
+function readAttributes(url) {
+  const attributes = {};
+  if (!url) {
+    // Parse only manual mode; a new URL never inherits a previous landing's token or IDs.
+    const template = document.createElement('template');
+    template.innerHTML = get('componentMarkup').value;
+    const components = template.content.querySelectorAll('onaim-landing-page');
+    if (components.length !== 1) throw new Error('ჩასვი სრული URL ან ერთი onaim-landing-page ელემენტი.');
+    for (const name of ['promotion-id', 'landing-page-id', 'tenant-code', 'language', 'enable-signalr', 'otp']) {
+      const value = components[0].getAttribute(name);
+      if (value !== null) attributes[name] = value;
+    }
+  }
+  if (url) {
+    const params = new URL(url).searchParams;
+    const overrides = {
+      'promotion-id': params.get('promotionId') || params.get('promotion-id'),
+      'landing-page-id': params.get('landingPageId') || params.get('landing-page-id'),
+      'tenant-code': params.get('tenantCode') || params.get('tenant-code'),
+      language: params.get('lang') || params.get('language') || 'en',
+      'enable-signalr': params.get('enable-signalr'),
+      otp: params.get('otp') || params.get('ott') || params.get('one-time-token')
+    };
+    for (const [name, value] of Object.entries(overrides)) {
+      if (value !== null) attributes[name] = value;
+    }
+  }
+  for (const name of ['promotion-id', 'landing-page-id', 'tenant-code']) {
+    if (!attributes[name]?.trim()) throw new Error((url ? 'URL-ში აკლია ' : 'ელემენტში აკლია ') + name + ' პარამეტრი.');
+  }
+  if (attributes['enable-signalr'] !== undefined && !['true', 'false'].includes(attributes['enable-signalr'])) {
+    throw new Error('enable-signalr უნდა იყოს true ან false.');
+  }
+  return attributes;
+}
+
+function sdkFromLandingUrl(url) {
+  // ONAIM's documented embed script location, resolved on this landing's origin.
+  // This does not scrape or execute scripts from the standalone HTML page.
+  return { url: new URL('/widget/onaim-landing-page.js', url).href, isModule: false };
+}
+
+function showGeneratedCode(sdk, attributes) {
+  const escapeAttribute = (value) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+  get('sdkMarkup').value = `<script defer src="${escapeAttribute(sdk.url)}"></script>`;
+  const lines = Object.entries(attributes).map(([name, value]) => `  ${name}="${escapeAttribute(value)}"`).join('\n');
+  get('componentMarkup').value = `<onaim-landing-page\n${lines}>\n</onaim-landing-page>`;
+}
+
+function createLandingShell() {
+  const shell = document.createElement('div');
+  shell.className = 'landing-shell';
+  const header = document.createElement('div');
+  header.className = 'landing-shell-header';
+  const title = document.createElement('h1');
+  title.className = 'landing-shell-title';
+  title.textContent = get('landingTitle').value.trim();
+  if (title.textContent) header.append(title);
+  const actions = document.createElement('div');
+  actions.className = 'landing-shell-actions';
+  const balanceValue = get('landingBalance').value.trim();
+  if (balanceValue) {
+    if (!/^\d+$/.test(balanceValue)) throw new Error('ბალანსი უნდა იყოს არაუარყოფითი მთელი რიცხვი.');
+    const balance = document.createElement('span');
+    balance.className = 'landing-shell-balance';
+    balance.setAttribute('aria-label', `Tu saldo: ${balanceValue} fichas`);
+    const label = document.createElement('span');
+    label.textContent = 'Tu saldo';
+    const coin = document.createElement('span');
+    coin.className = 'landing-shell-coin';
+    coin.setAttribute('aria-hidden', 'true');
+    coin.textContent = 'DJ';
+    const amount = document.createElement('strong');
+    amount.textContent = balanceValue;
+    const unit = document.createElement('span');
+    unit.textContent = 'fichas';
+    balance.append(label, coin, amount, unit);
+    actions.append(balance);
+  }
+  const backValue = get('landingBackUrl').value.trim();
+  if (backValue) {
+    const backUrl = new URL(backValue, window.location.href);
+    if (!['https:', 'http:'].includes(backUrl.protocol) && !(window.location.protocol === 'file:' && backValue.startsWith('/'))) {
+      throw new Error('დაბრუნების ბმული უნდა იყოს HTTP/HTTPS ან საიტის შიდა მისამართი.');
+    }
+    const back = document.createElement('a');
+    back.className = 'landing-shell-back';
+    back.href = backValue;
+    back.textContent = 'Volver a DJ Fichas';
+    actions.append(back);
+  }
+  header.append(actions);
+  shell.append(header);
+  return shell;
+}
+
+function finish() {
+  get('loadButton').disabled = false;
+  get('loadButton').textContent = 'Sync';
+}
+
+async function loadLanding() {
+  const current = ++revision;
+  try {
+    const url = get('landingUrl').value.trim() ? normalizeUrl(get('landingUrl').value) : null;
+    const attributes = readAttributes(url);
+    const shell = createLandingShell();
+    const sdk = url ? sdkFromLandingUrl(url) : readSdk();
+    const sdkKey = `${sdk.isModule}:${sdk.url}`;
+    const componentRegistered = Boolean(customElements.get('onaim-landing-page'));
+    if (componentRegistered && activeSdkKey && activeSdkKey !== sdkKey) {
+      throw new Error('სხვა SDK-ზე გადასასვლელად განაახლე გვერდი და ჩასვი ახალი script.');
+    }
+    if (url) showGeneratedCode(sdk, attributes);
+    resetPreview();
+    get('statusText').textContent = 'იტვირთება…';
+    get('loadButton').disabled = true;
+    get('loadButton').textContent = 'Sync…';
+    if (!componentRegistered) {
+      await loadSdk(sdk.url, sdk.isModule);
+      activeSdkKey = sdkKey;
+    }
+      if (current !== revision) return;
+      await waitForComponent();
+      if (current !== revision) return;
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative';
+      const transition = document.createElement('div');
+      transition.className = 'transition-opacity duration-300';
+      transition.setAttribute('aria-hidden', 'false');
+      const content = document.createElement('div');
+      content.className = 'w-full';
+      const component = document.createElement('onaim-landing-page');
+      for (const [name, value] of Object.entries(attributes)) component.setAttribute(name, value);
+      content.append(component);
+      transition.append(content);
+      wrapper.append(transition);
+      shell.append(wrapper);
+      get('componentHost').append(shell);
+      get('componentHost').hidden = false;
+      get('widgetPlaceholder').style.display = 'none';
+      get('statusText').textContent = 'ONAIM კომპონენტი ჩასმულია. შიგთავსს SDK ტვირთავს.';
+  } catch (error) {
+    if (current === revision) get('statusText').textContent = error instanceof TypeError ? 'URL არასწორია. შეიყვანე სრული მისამართი.' : error.message;
+  } finally {
+    if (current === revision) finish();
+  }
+}
+
+get('loadButton').addEventListener('click', loadLanding);
+get('clearButton').addEventListener('click', () => {
+  revision++;
+  resetPreview();
+  get('landingUrl').value = '';
+  get('statusText').textContent = 'მზადაა ჩასატვირთად';
+  finish();
+});
+get('landingUrl').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') { event.preventDefault(); loadLanding(); }
+});

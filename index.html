@@ -1,0 +1,525 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Landing Widget Preview</title>
+  <script src="index.js" defer></script>
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+
+  <header class="topbar">
+    <div class="container nav-wrapper">
+
+      <div class="logo">
+        <span class="logo-icon">W</span>
+        <span class="logo-text">WidgetLand</span>
+      </div>
+
+      <nav class="nav">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#widget">Widget</a>
+        <a href="#about">About</a>
+      </nav>
+
+      <a href="#widget" class="nav-button">
+        Open Widget
+      </a>
+
+    </div>
+  </header>
+
+
+  <main>
+
+    <!-- HERO SECTION -->
+    <section class="hero" id="home">
+
+      <div class="hero-glow hero-glow-one"></div>
+      <div class="hero-glow hero-glow-two"></div>
+
+      <div class="container hero-grid">
+
+        <div class="hero-content">
+
+          <div class="badge">
+            <span class="badge-dot"></span>
+            Landing Page Widget
+          </div>
+
+          <h1>
+            Embed any landing page
+            <span>inside your website.</span>
+          </h1>
+
+          <p class="hero-description">
+            Add another landing page directly inside this page by entering
+            its URL. The content will be displayed through a responsive
+            widget powered by an ONAIM web component.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#widget" class="primary-button">
+              Try Widget
+            </a>
+
+            <a href="#features" class="secondary-button">
+              Explore Features
+            </a>
+          </div>
+
+          <div class="hero-stats">
+
+            <div class="stat">
+              <strong>100%</strong>
+              <span>Responsive</span>
+            </div>
+
+            <div class="stat">
+              <strong>Fast</strong>
+              <span>URL Loading</span>
+            </div>
+
+            <div class="stat">
+              <strong>Simple</strong>
+              <span>Integration</span>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="hero-preview">
+
+          <div class="preview-card">
+
+            <div class="browser-header">
+
+              <div class="browser-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+
+              <div class="browser-address">
+                your-landing-page.com
+              </div>
+
+            </div>
+
+            <div class="preview-content">
+
+              <div class="preview-badge">
+                LIVE PREVIEW
+              </div>
+
+              <h3>
+                Beautiful landing pages,
+                embedded instantly.
+              </h3>
+
+              <p>
+                Enter a URL below and load your external landing page.
+              </p>
+
+              <div class="fake-content-row">
+                <div class="fake-box large"></div>
+
+                <div class="fake-column">
+                  <div class="fake-box small"></div>
+                  <div class="fake-box small"></div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- FEATURES -->
+    <section class="features-section" id="features">
+
+      <div class="container">
+
+        <div class="section-heading">
+
+          <span class="section-label">
+            FEATURES
+          </span>
+
+          <h2>
+            Everything you need for a simple widget
+          </h2>
+
+          <p>
+            This example combines a modern landing page design with a real
+            ONAIM widget configured from a landing page URL.
+          </p>
+
+        </div>
+
+
+        <div class="feature-grid">
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ↗
+            </div>
+
+            <h3>
+              Load External URL
+            </h3>
+
+            <p>
+              Enter the address of another landing page and display it
+              directly inside the widget.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ◫
+            </div>
+
+            <h3>
+              Responsive Layout
+            </h3>
+
+            <p>
+              The widget automatically adapts to desktop, tablet and mobile
+              screen sizes.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ⚡
+            </div>
+
+            <h3>
+              Fast Preview
+            </h3>
+
+            <p>
+              Reload different landing pages quickly without leaving the
+              current page.
+            </p>
+
+          </article>
+
+
+          <article class="feature-card">
+
+            <div class="feature-icon">
+              ◉
+            </div>
+
+            <h3>
+              Clean Interface
+            </h3>
+
+            <p>
+              A simple control panel keeps the widget easy to use while the
+              rest of the page stays visually clean.
+            </p>
+
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- WIDGET SECTION -->
+    <section class="widget-section" id="widget">
+
+      <div class="container">
+
+        <div class="section-heading widget-heading">
+
+          <span class="section-label">
+            LIVE WIDGET
+          </span>
+
+          <h2>
+            Preview another landing page
+          </h2>
+
+          <p>
+            ჩასვი ლენდინგის URL და დააჭირე Sync-ს.
+          </p>
+
+        </div>
+
+
+        <div class="widget-card">
+
+          <details class="embed-settings">
+            <summary>დამატებითი პარამეტრები და გენერირებული კოდი</summary>
+            <label for="sdkMarkup">ვიჯეტის script ტეგი</label>
+            <textarea id="sdkMarkup" rows="3" spellcheck="false" autocomplete="off">&lt;script defer src="https://qa-landing-v2.onaim.io/widget/onaim-landing-page.js"&gt;&lt;/script&gt;</textarea>
+            <label for="componentMarkup">ვიჯეტის ელემენტი</label>
+            <textarea id="componentMarkup" rows="6" spellcheck="false" autocomplete="off">&lt;onaim-landing-page
+  promotion-id="201"
+  landing-page-id="162"
+  tenant-code="qa"
+  language="en"&gt;
+&lt;/onaim-landing-page&gt;</textarea>
+            <p>URL-ის ჩასმისას ეს კოდი ავტომატურად გენერირდება. URL-ის გარეშე შეგიძლია script და ელემენტი ხელით მიუთითო.</p>
+            <details class="landing-layout-settings">
+              <summary>ლენდინგის სათაური და გარსი</summary>
+              <label for="landingTitle">სათაური</label>
+              <input id="landingTitle" type="text" value="La Raspadita" />
+              <label for="landingBalance">ბალანსი (არასავალდებულო, წინასწარი ნახვისთვის)</label>
+              <input id="landingBalance" type="number" min="0" step="1" placeholder="მაგალითად: 81" />
+              <label for="landingBackUrl">დაბრუნების ბმული (არასავალდებულო)</label>
+              <input id="landingBackUrl" type="text" value="/dj-fichas" />
+              <p>ბალანსი ავტომატურად არ მოდის SDK-იდან. რეალურ საიტზე ეს მნიშვნელობა მომხმარებლის ანგარიშიდან უნდა მიეწოდოს.</p>
+            </details>
+          </details>
+
+          <div class="widget-toolbar">
+
+            <div class="url-group">
+
+              <label for="landingUrl">
+                Landing Page URL
+              </label>
+
+              <div class="url-input-wrapper">
+
+                <span class="url-icon">
+                  🔗
+                </span>
+
+                <input
+                  id="landingUrl"
+                  type="text"
+                  placeholder="https://qa-landing-v2.onaim.io/?lang=en&amp;landingPageId=162&amp;promotionId=201&amp;tenantCode=qa&amp;ott=301"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+
+              </div>
+
+            </div>
+
+
+            <button id="loadButton" class="load-button" type="button">
+              Sync
+            </button>
+
+          </div>
+
+
+          <div class="widget-info">
+
+            <div>
+              <span class="status-dot"></span>
+              <span id="statusText" role="status" aria-live="polite">
+                Widget is ready
+              </span>
+            </div>
+
+            <button id="clearButton" class="clear-button" type="button">
+              Clear
+            </button>
+
+          </div>
+
+
+          <div class="landing-widget-wrapper">
+
+            <div id="widgetPlaceholder" class="widget-placeholder">
+
+              <div class="placeholder-icon">
+                ◫
+              </div>
+
+              <h3>
+                Your landing page will appear here
+              </h3>
+
+              <p>
+                Enter a URL above and click
+                <strong>Sync</strong>.
+              </p>
+
+            </div>
+
+            <div id="componentHost" hidden></div>
+
+          </div>
+
+          <p class="embed-note">Sync ვიჯეტს პირდაპირ ამ გვერდის DOM-ში ამატებს. შიგთავსს ONAIM-ის SDK ტვირთავს.</p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ABOUT / CONTENT -->
+    <section class="content-section" id="about">
+
+      <div class="container content-grid">
+
+        <div class="content-card content-card-main">
+
+          <span class="section-label">
+            HOW IT WORKS
+          </span>
+
+          <h2>
+            ONAIM widget integration
+          </h2>
+
+          <p>
+            JavaScript reads promotionId, landingPageId, tenantCode and lang from the URL, then mounts an <code>onaim-landing-page</code> web component.
+          </p>
+
+          <p>
+            This makes it useful for testing landing pages, promotional pages,
+            previews, internal tools and other web content.
+          </p>
+
+        </div>
+
+
+        <div class="content-card">
+
+          <span class="number">
+            01
+          </span>
+
+          <h3>
+            Paste URL
+          </h3>
+
+          <p>
+            Copy the landing page URL you want to preview.
+          </p>
+
+        </div>
+
+
+        <div class="content-card">
+
+          <span class="number">
+            02
+          </span>
+
+          <h3>
+            Click Sync
+          </h3>
+
+          <p>
+            JavaScript mounts the ONAIM widget.
+          </p>
+
+        </div>
+
+
+        <div class="content-card">
+
+          <span class="number">
+            03
+          </span>
+
+          <h3>
+            View Landing
+          </h3>
+
+          <p>
+            The external page appears directly inside the widget.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- CTA -->
+    <section class="cta-section">
+
+      <div class="container">
+
+        <div class="cta-card">
+
+          <div>
+            <span class="section-label">
+              READY TO TEST?
+            </span>
+
+            <h2>
+              Load your landing page now.
+            </h2>
+
+            <p>
+              Use the widget above to preview any supported URL.
+            </p>
+          </div>
+
+          <a href="#widget" class="primary-button">
+            Open Widget
+          </a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <footer>
+
+    <div class="container footer-content">
+
+      <div>
+        <strong>WidgetLand</strong>
+
+        <p>
+          ONAIM landing page widget preview.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <a href="#home">Home</a>
+        <a href="#features">Features</a>
+        <a href="#widget">Widget</a>
+      </div>
+
+    </div>
+
+  </footer>
+
+
+
+
+</body>
+</html>
+
