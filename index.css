@@ -628,7 +628,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, textarea:focus-visi
 }
 
 .widget-toolbar {
-  display: grid;
+  display: flex;
 
   grid-template-columns: 1fr auto;
 

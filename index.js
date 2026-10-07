@@ -1,4 +1,6 @@
-﻿const get = (id) => document.getElementById(id);
+﻿let url = 'https://qa-landing-v2.onaim.io/?lang=en&landingPageId=162&promotionId=201&tenantCode=qa&ott=301';
+
+const get = (id) => document.getElementById(id);
 const sdkLoads = new Map();
 let activeSdkKey = null;
 let revision = 0;
@@ -169,16 +171,16 @@ function finish() {
 async function loadLanding() {
   const current = ++revision;
   try {
-    const url = get('landingUrl').value.trim() ? normalizeUrl(get('landingUrl').value) : null;
-    const attributes = readAttributes(url);
+    const landingUrl = normalizeUrl(url);
+    const attributes = readAttributes(landingUrl);
     const shell = createLandingShell();
-    const sdk = url ? sdkFromLandingUrl(url) : readSdk();
+    const sdk = sdkFromLandingUrl(landingUrl);
     const sdkKey = `${sdk.isModule}:${sdk.url}`;
     const componentRegistered = Boolean(customElements.get('onaim-landing-page'));
     if (componentRegistered && activeSdkKey && activeSdkKey !== sdkKey) {
       throw new Error('სხვა SDK-ზე გადასასვლელად განაახლე გვერდი და ჩასვი ახალი script.');
     }
-    if (url) showGeneratedCode(sdk, attributes);
+    showGeneratedCode(sdk, attributes);
     resetPreview();
     get('statusText').textContent = 'იტვირთება…';
     get('loadButton').disabled = true;
@@ -218,10 +220,9 @@ get('loadButton').addEventListener('click', loadLanding);
 get('clearButton').addEventListener('click', () => {
   revision++;
   resetPreview();
-  get('landingUrl').value = '';
   get('statusText').textContent = 'მზადაა ჩასატვირთად';
   finish();
 });
-get('landingUrl').addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') { event.preventDefault(); loadLanding(); }
-});
+// Render automatically using the URL configured at the top of this file.
+loadLanding();
+

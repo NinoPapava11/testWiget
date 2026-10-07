@@ -265,7 +265,7 @@
           </h2>
 
           <p>
-            ჩასვი ლენდინგის URL და დააჭირე Sync-ს.
+            ლენდინგი ავტომატურად იტვირთება index.js-ში მითითებული URL-იდან. Sync ხელახლა ჩატვირთავს ვიჯეტს.
           </p>
 
         </div>
@@ -276,15 +276,15 @@
           <details class="embed-settings">
             <summary>დამატებითი პარამეტრები და გენერირებული კოდი</summary>
             <label for="sdkMarkup">ვიჯეტის script ტეგი</label>
-            <textarea id="sdkMarkup" rows="3" spellcheck="false" autocomplete="off">&lt;script defer src="https://qa-landing-v2.onaim.io/widget/onaim-landing-page.js"&gt;&lt;/script&gt;</textarea>
+            <textarea id="sdkMarkup" rows="3" spellcheck="false" autocomplete="off" readonly>&lt;script defer src="https://qa-landing-v2.onaim.io/widget/onaim-landing-page.js"&gt;&lt;/script&gt;</textarea>
             <label for="componentMarkup">ვიჯეტის ელემენტი</label>
-            <textarea id="componentMarkup" rows="6" spellcheck="false" autocomplete="off">&lt;onaim-landing-page
+            <textarea id="componentMarkup" rows="6" spellcheck="false" autocomplete="off" readonly>&lt;onaim-landing-page
   promotion-id="201"
   landing-page-id="162"
   tenant-code="qa"
   language="en"&gt;
 &lt;/onaim-landing-page&gt;</textarea>
-            <p>URL-ის ჩასმისას ეს კოდი ავტომატურად გენერირდება. URL-ის გარეშე შეგიძლია script და ელემენტი ხელით მიუთითო.</p>
+            <p>ეს კოდი ავტომატურად გენერირდება index.js-ის დასაწყისში მითითებული url ცვლადიდან.</p>
             <details class="landing-layout-settings">
               <summary>ლენდინგის სათაური და გარსი</summary>
               <label for="landingTitle">სათაური</label>
@@ -298,31 +298,6 @@
           </details>
 
           <div class="widget-toolbar">
-
-            <div class="url-group">
-
-              <label for="landingUrl">
-                Landing Page URL
-              </label>
-
-              <div class="url-input-wrapper">
-
-                <span class="url-icon">
-                  🔗
-                </span>
-
-                <input
-                  id="landingUrl"
-                  type="text"
-                  placeholder="https://qa-landing-v2.onaim.io/?lang=en&amp;landingPageId=162&amp;promotionId=201&amp;tenantCode=qa&amp;ott=301"
-                  autocomplete="off"
-                  spellcheck="false"
-                />
-
-              </div>
-
-            </div>
-
 
             <button id="loadButton" class="load-button" type="button">
               Sync
@@ -360,7 +335,7 @@
               </h3>
 
               <p>
-                Enter a URL above and click
+                Reload the configured landing page with
                 <strong>Sync</strong>.
               </p>
 
@@ -522,4 +497,6 @@
 
 </body>
 </html>
+
+
 
