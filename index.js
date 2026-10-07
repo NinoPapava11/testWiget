@@ -1,4 +1,4 @@
-﻿let url = 'https://qa-landing-v2.onaim.io/?lang=en&landingPageId=162&promotionId=201&tenantCode=qa&ott=301';
+﻿let url = 'https://dev-landing-v2.onaim.io/?lang=en&landingPageId=7066&promotionId=5724&tenantCode=dev&ott=559';
 
 const get = (id) => document.getElementById(id);
 const sdkLoads = new Map();
